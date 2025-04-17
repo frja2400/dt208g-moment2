@@ -22,18 +22,23 @@ class TodoList {
     if (!task || priority < 1 || priority > 3) {
       return false;
     }
-  
+
     //Annars addera en ny todo
     const newTodo: Todo = {
       task: task.trim(),
       completed: false,
       priority: priority,
     };
-  
+
     //Pusha till listan arrayen och spara direkt i local storage.
     this.todos.push(newTodo);
     this.saveToLocalStorage();
     return true;
+  }
+
+  //Returnerar den privata todo-arrayen så att jag kan använda den utanför klassen.
+  getTodos(): Todo[] {
+    return this.todos;
   }
 
   //Spara till local storage
@@ -63,15 +68,33 @@ const addToDo = document.getElementById("addToDo") as HTMLButtonElement;
 //Addera händelselyssnare
 addToDo.addEventListener("click", () => {
   const task = taskInput.value;
-  const priority = Number(prioritySelect.value); 
+  const priority = Number(prioritySelect.value);
 
   const success = todoList.addTodo(task, priority);
 
   if (success) {
-    console.log("Todo tillagd");
+    renderTodos();
     taskInput.value = "";
     prioritySelect.value = "";
   } else {
     alert("Felaktig inmatning. Kontrollera att uppgiften inte är tom och att prioritet är 1-3");
   }
 });
+
+//Skriv ut min nya to do
+const todoListEl = document.getElementById("todoList") as HTMLUListElement;
+
+function renderTodos(): void {
+  todoListEl.innerHTML = "";
+
+  const todos = todoList.getTodos();
+
+  todos.forEach(todo => {
+    const li = document.createElement("li");
+    li.textContent = `${todo.task} (prio ${todo.priority})`;
+    todoListEl.appendChild(li);
+  });
+}
+
+//För att visa alla todos direkt när sidan laddas. 
+renderTodos();
