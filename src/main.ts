@@ -41,6 +41,14 @@ class TodoList {
     return this.todos;
   }
 
+  //Markera en todo som klar genom att skicka med vald index i todo-arrayen och ändra den till completed = true.
+  markTodoCompleted(todoIndex: number): void {
+    if (todoIndex >= 0 && todoIndex < this.todos.length) {
+      this.todos[todoIndex].completed = true;
+      this.saveToLocalStorage();
+    }
+  }
+
   //Spara till local storage
   saveToLocalStorage(): void {
     localStorage.setItem("todos", JSON.stringify(this.todos));
@@ -89,9 +97,25 @@ function renderTodos(): void {
 
   const todos = todoList.getTodos();
 
-  todos.forEach(todo => {
+  todos.forEach((todo, index) => {
     const li = document.createElement("li");
     li.textContent = `${todo.task} (prio ${todo.priority})`;
+
+    //Addera en KLAR-knapp till todos som inte är klara
+    if (todo.completed) {
+      li.style.textDecoration = "line-through";
+    } else {
+      const doneButton = document.createElement("button");
+      doneButton.textContent = "KLAR";
+      doneButton.addEventListener("click", () => {
+        //Min instans av TodoList anropar metoden markTodoCompleted och skickar med index som argument.
+        todoList.markTodoCompleted(index);
+        renderTodos();
+      });
+
+      //Adderar knappen till li-elementet och lägger in li-elementet i ul-listan.
+      li.appendChild(doneButton);
+    }
     todoListEl.appendChild(li);
   });
 }
