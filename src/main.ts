@@ -42,18 +42,21 @@ class TodoList {
   }
 
   //Markera en todo som klar genom att skicka med vald index i todo-arrayen och ändra den till completed = true.
-  markTodoCompleted(todoIndex: number): void {
-    if (todoIndex >= 0 && todoIndex < this.todos.length) {
-      this.todos[todoIndex].completed = true;
+  markTodoCompleted(todoToMark: Todo): void {
+    //Använder indexOf för att hitta rätt index i arrayen.
+    const index = this.todos.indexOf(todoToMark);
+    if (index !== -1) {
+      this.todos[index].completed = true;
       this.saveToLocalStorage();
     }
   }
 
   //Radera en todo
-  removeTodo(index: number): void {
-    if (index >= 0 && index < this.todos.length) {
-    this.todos.splice(index, 1); //Ta bort ett element vid det här indexet.
-    this.saveToLocalStorage();
+  removeTodo(todoToRemove: Todo): void {
+    const index = this.todos.indexOf(todoToRemove);
+    if (index !== -1) {
+      this.todos.splice(index, 1);
+      this.saveToLocalStorage();
     }
   }
 
@@ -106,19 +109,21 @@ function renderTodos(): void {
   //Sorterar min array efter priority.
   const todos = todoList.getTodos().slice().sort((a, b) => a.priority - b.priority);
 
-  todos.forEach((todo, index) => {
+  todos.forEach((todo) => {
     const li = document.createElement("li");
     li.textContent = `${todo.task} (prio ${todo.priority})`;
+    li.classList.add("todoItem");
 
     //Addera en KLAR-knapp till todos som inte är klara
     if (todo.completed) {
-      li.style.textDecoration = "line-through";
+      li.classList.add("completed");
     } else {
       const doneButton = document.createElement("button");
       doneButton.textContent = "KLAR";
+      doneButton.classList.add("doneButton");
       doneButton.addEventListener("click", () => {
         //Min instans av TodoList anropar metoden markTodoCompleted och skickar med index som argument.
-        todoList.markTodoCompleted(index);
+        todoList.markTodoCompleted(todo);
         renderTodos();
       });
 
@@ -129,8 +134,9 @@ function renderTodos(): void {
     //Addera en radera-knapp till varje li-element.
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "RADERA";
+    deleteButton.classList.add("deleteButton");
     deleteButton.addEventListener("click", () => {
-      todoList.removeTodo(index); //Anropa raderametoden.
+      todoList.removeTodo(todo); //Anropa raderametoden.
       renderTodos();
     });
 
