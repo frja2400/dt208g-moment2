@@ -49,6 +49,14 @@ class TodoList {
     }
   }
 
+  //Radera en todo
+  removeTodo(index: number): void {
+    if (index >= 0 && index < this.todos.length) {
+    this.todos.splice(index, 1); //Ta bort ett element vid det här indexet.
+    this.saveToLocalStorage();
+    }
+  }
+
   //Spara till local storage
   saveToLocalStorage(): void {
     localStorage.setItem("todos", JSON.stringify(this.todos));
@@ -95,7 +103,8 @@ const todoListEl = document.getElementById("todoList") as HTMLUListElement;
 function renderTodos(): void {
   todoListEl.innerHTML = "";
 
-  const todos = todoList.getTodos();
+  //Sorterar min array efter priority.
+  const todos = todoList.getTodos().slice().sort((a, b) => a.priority - b.priority);
 
   todos.forEach((todo, index) => {
     const li = document.createElement("li");
@@ -116,6 +125,16 @@ function renderTodos(): void {
       //Adderar knappen till li-elementet och lägger in li-elementet i ul-listan.
       li.appendChild(doneButton);
     }
+
+    //Addera en radera-knapp till varje li-element.
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "RADERA";
+    deleteButton.addEventListener("click", () => {
+      todoList.removeTodo(index); //Anropa raderametoden.
+      renderTodos();
+    });
+
+    li.appendChild(deleteButton);
     todoListEl.appendChild(li);
   });
 }
