@@ -8,5 +8,5 @@ I detta moment har jag skapat en enkel todo-applikation med TypeScript och objek
 - Main: Skapar instans av klassen och funktioner som skriver ut till skärmen och använder local storage.
 
 **Gränssnitt**
-- Knappar och todo-listan skapas dynamiskt med TypeScript.
-- CSS används för att tydliggöra todo-listans funktioner och göra den mer användarvänlig.
+- Todo-listan samt dess funktioner skapas dynamiskt med TypeScript.
+- CSS och TypeScript används för att tydliggöra todo-listans funktioner, göra den mer användarvänlig och avancera användargränssnittet.

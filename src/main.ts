@@ -31,8 +31,14 @@ const todoListEl = document.getElementById("todoList") as HTMLUListElement;
 function renderTodos(): void {
   todoListEl.innerHTML = "";
 
-  //Sorterar min array efter priority.
-  const todos = todoList.getTodos().slice().sort((a, b) => a.priority - b.priority);
+  const todos = todoList.getTodos().slice().sort((a, b) => {
+    //Flytta klara längst ner
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+    //Om båda är lika (båda klara eller oklara), sortera på prioritet
+    return a.priority - b.priority;
+  });
 
   todos.forEach((todo, index) => {
     const li = document.createElement("li");
@@ -49,7 +55,7 @@ function renderTodos(): void {
     checkbox.addEventListener("change", () => {
       todo.completed = checkbox.checked;
       todoList.saveToLocalStorage();
-      span.classList.toggle("completed", todo.completed);
+      renderTodos();
     });
 
     //Skapar label för tillgänglighet och kopplar till checkbox
@@ -67,7 +73,8 @@ function renderTodos(): void {
 
     //Addera en radera-knapp till varje li-element.
     const deleteButton = document.createElement("button");
-    deleteButton.textContent = "RADERA";
+    deleteButton.innerHTML = '<strong class="fas fa-times"></strong>';
+    deleteButton.setAttribute("aria-label", "Radera uppgift");
     deleteButton.classList.add("deleteButton");
     deleteButton.addEventListener("click", () => {
       todoList.removeTodo(todo); //Anropa raderametoden.
