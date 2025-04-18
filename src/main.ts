@@ -34,26 +34,35 @@ function renderTodos(): void {
   //Sorterar min array efter priority.
   const todos = todoList.getTodos().slice().sort((a, b) => a.priority - b.priority);
 
-  todos.forEach((todo) => {
+  todos.forEach((todo, index) => {
     const li = document.createElement("li");
-    li.textContent = `${todo.task} (prio ${todo.priority})`;
-    li.classList.add("todoItem");
 
-    //Addera en KLAR-knapp till todos som inte är klara
+    //Skapa en unik id för varje checkbox
+    const checkboxId = `todo-checkbox-${index}`;
+
+    //Skapa checkbox
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = checkboxId;
+    checkbox.checked = todo.completed;
+
+    checkbox.addEventListener("change", () => {
+      todo.completed = checkbox.checked;
+      todoList.saveToLocalStorage();
+      span.classList.toggle("completed", todo.completed);
+    });
+
+    //Skapar label för tillgänglighet och kopplar till checkbox
+    const label = document.createElement("label");
+    label.htmlFor = checkboxId;
+    label.classList.add("visually-hidden"); // Döljer visuellt men finns för skärmläsare
+    label.textContent = "Markera som klar";
+
+    //Adderar span i li för CSS skull. Så att det inte radera-knappen räknas med i "completed".
+    const span = document.createElement("span");
+    span.textContent = `${todo.task} (prio ${todo.priority})`;
     if (todo.completed) {
-      li.classList.add("completed");
-    } else {
-      const doneButton = document.createElement("button");
-      doneButton.textContent = "KLAR";
-      doneButton.classList.add("doneButton");
-      doneButton.addEventListener("click", () => {
-        //Min instans av TodoList anropar metoden markTodoCompleted och skickar med index som argument.
-        todoList.markTodoCompleted(todo);
-        renderTodos();
-      });
-
-      //Adderar knappen till li-elementet och lägger in li-elementet i ul-listan.
-      li.appendChild(doneButton);
+      span.classList.add("completed");
     }
 
     //Addera en radera-knapp till varje li-element.
@@ -65,6 +74,10 @@ function renderTodos(): void {
       renderTodos();
     });
 
+    //Lägg till alla delar i li
+    li.appendChild(checkbox);
+    li.appendChild(label);
+    li.appendChild(span);
     li.appendChild(deleteButton);
     todoListEl.appendChild(li);
   });
